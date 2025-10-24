@@ -6,7 +6,16 @@ const players = (function() {
     // ask for player names
     const player1 = Player('X', 'Chris')
     const player2 = Player('O', 'Kris') 
-    return { player1, player2 } 
+    let curr_player = player1;
+    const toggle_player = () => {
+        curr_player = curr_player == player1 ?  player2 :  player1
+    }
+    return { 
+        player1, player2, toggle_player, 
+        get curr_player() {
+            return curr_player
+        } 
+    } 
 })()
 
 const gameboard = (function() {
@@ -15,41 +24,24 @@ const gameboard = (function() {
         ['', '', ''],
         ['', '', ''],
     ]
-    return { board }
+    const default_board = document.getElementById('container').innerHTML
+    return { board, default_board }
 })()
 
 function insert (player, row, col) {
     if(gameboard.board[row][col] != '' && !isGameOver()) {
-        let x = Math.floor(Math.random()*3)
-        let y = Math.floor(Math.random()*3)
-        insert(player, x, y)
+        console.log('That spot is taken. Try again.')
     } else if (isGameOver()) {
         return
     } else {
         gameboard.board[row][col] = player.marker
+        displayController.updateDisplay()
     }
 }
 
-const game = (function() {    
-    // loop until the game is over
-    while (!isGameOver()) {
-        let x = Math.floor(Math.random()*3)
-        let y = Math.floor(Math.random()*3)
-        insert(players.player1, x, y)
-        let s = Math.floor(Math.random()*3)
-        let v = Math.floor(Math.random()*3)
-        insert(players.player2, s, v)        
-    }
-
-})()
-
-const displayController = (function() {
-    const board = document.querySelector('#container')
-    for(let i = 0; i < 10; i++) {
-        const box = document.createElement('div')
-        board.appendChild(box)
-    }
-})()
+function insertOnClick() {
+    
+}
 
 function rowWin() {
     const board = gameboard.board
@@ -137,3 +129,23 @@ function isGameOver() {
     }
     return false
 }
+
+const displayController = (function() {
+    const board = document.querySelector('#container')
+    const updateDisplay = () => {
+        board.innerHTML = gameboard.default_board
+        for(let row = 0; row < 3; row++) {
+            for(let col = 0; col < 3; col++) {
+                const box = document.createElement('div')
+                box.textContent = gameboard.board[row][col]
+                board.appendChild(box)
+            }
+        }
+    }
+    return { updateDisplay }
+})()
+
+const game = (function() {    
+    // loop until the game is over
+    displayController.updateDisplay()
+})()
