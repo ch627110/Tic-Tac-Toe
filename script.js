@@ -4,14 +4,21 @@ const Player = (marker, name) => {
 
 const players = (function() {
     // ask for player names
-    const player1 = Player('X', 'Chris')
-    const player2 = Player('O', 'Kris') 
+    // const player1 = Player('X', prompt('Player 1, what is your name?'))
+    // const player2 = Player('O', prompt('What is your name Player 2?')) 
+
+    const player1 = Player('X', 'Player 1')
+    const player2 = Player('O', 'Player 2')
+
     let curr_player = player1;
     const toggle_player = () => {
         curr_player = curr_player == player1 ?  player2 :  player1
     }
+    const reset_player = () => {
+        curr_player = player1
+    }
     return { 
-        player1, player2, toggle_player, 
+        player1, player2, toggle_player, reset_player, 
         get curr_player() {
             return curr_player
         } 
@@ -25,7 +32,7 @@ const gameboard = (function() {
         ['', '', ''],
     ]
     const default_board = document.getElementById('container').innerHTML
-    return { board, default_board }
+    return { board, default_board}
 })()
 
 function insert (player, row, col) {
@@ -36,11 +43,10 @@ function insert (player, row, col) {
     } else {
         gameboard.board[row][col] = player.marker
         displayController.updateDisplay()
+        isGameOver()
+        players.toggle_player()
+        updateConsole()
     }
-}
-
-function insertOnClick() {
-    
 }
 
 function rowWin() {
@@ -107,7 +113,7 @@ function boardStatus() {
         }
     }    
     if(containEmpty && !containMarker) {
-        console.log('The gameboard is clear.')
+        console.log('Game start.')
         return 'not started'
     } else if (!containEmpty && containMarker) {
         console.log('The gameboard is full. No winners.')
@@ -116,13 +122,14 @@ function boardStatus() {
         console.log('A winner has been detected.')
         return
     } else { // containEmpty && containMarker
-        console.log('The gameboard is not clear or full.')
+        console.log('The game is in progress.')
         return 'in progress'
     }
 }
 
 function isGameOver() {
     if(colWin() || rowWin() || diagWin() || boardStatus() == 'board full') {
+        players.toggle_player()
         console.log('The game is now over.')
         console.log(JSON.parse(JSON.stringify(gameboard.board)))
         return true
@@ -138,6 +145,10 @@ const displayController = (function() {
             for(let col = 0; col < 3; col++) {
                 const box = document.createElement('div')
                 box.textContent = gameboard.board[row][col]
+                // add an event listener
+                box.addEventListener('click', function() {
+                    insert(players.curr_player, row, col)
+                })
                 board.appendChild(box)
             }
         }
@@ -146,6 +157,34 @@ const displayController = (function() {
 })()
 
 const game = (function() {    
-    // loop until the game is over
     displayController.updateDisplay()
+    updateConsole()
+})()
+
+function updateConsole() {
+    const console = document.getElementById('console')
+    if(boardStatus() == 'not started') {
+        console.textContent = 'Welcome to Tic Tac Toe! Player 1, select a position!'
+    } else if(boardStatus() == 'board full') {
+        console.textContent = 'This game is a draw! Try again...'
+    } else if(boardStatus() == 'in progress') {
+        console.textContent = 'Your turn, ' + players.curr_player.name + '!'
+    } else {
+        console.textContent = 'Congratulations ' + players.curr_player.name +
+        '! You have won the game'
+    }
+}
+
+const restartGame = (function() {
+    const restart = document.getElementById('restart-button')
+    restart.addEventListener('click', function() {
+        players.reset_player()
+        gameboard.board = [
+            ['', '', ''],
+            ['', '', ''],
+            ['', '', ''],
+        ]
+        displayController.updateDisplay()
+        updateConsole()
+    })
 })()

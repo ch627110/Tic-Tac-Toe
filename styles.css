@@ -1,21 +1,68 @@
+html {
+    background-color: black;
+}
+
+h1 {
+    color: silver;
+    justify-self: center;
+}
+
 #container {
     border: 1px solid;
-    width: 50em;
-    height: 50em;
+    
+    width: 30em;
+    height: 30em;
+    
     justify-self: center;
+    align-self: center;
 
     display: grid;
-    grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;   
+    grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
+
+    background-color: darkslategray
 }
 
 #container div {
     border: 1px solid;
-    font-size: 10em;
+    
+    font-size: 5em;
     text-align: center;
 
     align-content: center;
 }
 
 #container div:hover {
-    background-color: silver;
+    background-color:slategray
+}
+
+#console {
+    color: white;
+    justify-self: center;
+    border: 1px solid maroon;
+    border-radius: 0.5em;
+    width: 30em;
+    margin-top: 1em;
+    height: 5em;
+    text-align: center;
+    align-content: center;
+    font-size: 1.15em;
+}
+
+#restart {
+    justify-self: center;
+    margin-top: 1em;
+}
+
+#restart button {
+    background-color: darkslategray;
+    color :white;
+    width: 10em;
+    height: 2.5em;
+    border-radius: 1em;
+}
+
+dialog {
+    width: 20em;
+    border-radius: 0.5em;
+    padding: 2em;
 }
